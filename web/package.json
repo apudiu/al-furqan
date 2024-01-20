@@ -1,0 +1,20 @@
+{
+  "name": "web",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start"
+  },
+  "dependencies": {
+    "@solidjs/start": "^0.4.10",
+    "solid-js": "^1.8.11",
+    "vinxi": "^0.1.4"
+  },
+  "devDependencies": {
+    "solid-devtools": "^0.29.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
