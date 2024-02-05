@@ -4,11 +4,14 @@ import (
 	"github.com/apudiu/alfurqan/database"
 	"github.com/apudiu/alfurqan/router"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
 )
 
 func main() {
 	app := fiber.New()
+
+	app.Use(logger.New())
 
 	// connect to DB
 	database.ConnectDB()
