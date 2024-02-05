@@ -6,6 +6,11 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	user := app.Group("user")
+	// versioning
+	v1 := app.Group("v1")
+
+	// groups
+
+	user := v1.Group("user")
 	userRoutes.SetupUserRoutes(user)
 }
