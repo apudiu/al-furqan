@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"log"
 )
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/", func(ctx *fiber.Ctx) error {
+	app.Get("/", func(ctx fiber.Ctx) error {
 		return ctx.SendString("Alhum-du-lillah")
 	})
 
