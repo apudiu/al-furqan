@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/apudiu/alfurqan/database"
 	"github.com/apudiu/alfurqan/router"
 	"github.com/gofiber/fiber/v2"
@@ -18,6 +20,11 @@ func main() {
 
 	// setup router
 	router.SetupRoutes(app)
+
+	// print routes
+	rs := app.GetRoutes(true)
+	rj, _ := json.MarshalIndent(rs, "", "  ")
+	fmt.Println(string(rj))
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("Alhum-du-lillah")

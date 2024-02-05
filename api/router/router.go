@@ -10,7 +10,5 @@ func SetupRoutes(app *fiber.App) {
 	v1 := app.Group("v1")
 
 	// groups
-
-	user := v1.Group("user")
-	userRoutes.SetupUserRoutes(user)
+	userRoutes.SetupUserRoutes(v1)
 }
