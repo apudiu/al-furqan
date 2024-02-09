@@ -1,4 +1,4 @@
-package userHandler
+package userhandler
 
 import (
 	"github.com/apudiu/alfurqan/database"

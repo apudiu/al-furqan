@@ -1,14 +1,17 @@
 package router
 
 import (
-	userRoutes "github.com/apudiu/alfurqan/internal/routes/user"
+	authRoutes "github.com/apudiu/alfurqan/internal/modules/auth/routes"
+	userRoutes "github.com/apudiu/alfurqan/internal/modules/user/routes"
 	"github.com/gofiber/fiber/v2"
 )
 
 func SetupRoutes(app *fiber.App) {
 	// versioning
-	v1 := app.Group("v1")
+	apiVer := app.Group("v1")
 
-	// groups
-	userRoutes.SetupUserRoutes(v1)
+	// Register routes
+
+	userRoutes.Setup(apiVer)
+	authRoutes.Setup(apiVer)
 }
