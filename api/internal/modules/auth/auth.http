@@ -1,4 +1,4 @@
-### Signup
+# @name Signup
 POST {{baseUrl}}/{{ver}}/auth/sign-up
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -9,7 +9,9 @@ Authorization: Bearer {{token}}
   "password": "1234"
 }
 
-### Signin
+###
+
+# @name Signin
 POST {{baseUrl}}/{{ver}}/auth/sign-in
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -20,12 +22,18 @@ Authorization: Bearer {{token}}
 }
 > {% client.global.set('token', response.body.d.token) %}
 
-### Auth user
+###
+
+# @name Auth user
 GET {{baseUrl}}/{{ver}}/auth/me
 Authorization: Bearer {{token}}
 
-### Signout ---
+###
+
+# @name Signout
 POST {{baseUrl}}/{{ver}}/auth/sign-out
 Authorization: Bearer {{token}}
 
 > {% client.global.set('token', '') %}
+
+###
