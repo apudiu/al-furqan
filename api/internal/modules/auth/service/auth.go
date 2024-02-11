@@ -2,6 +2,7 @@ package authservice
 
 import (
 	"errors"
+	"github.com/apudiu/alfurqan/config"
 	"github.com/apudiu/alfurqan/database"
 	"github.com/apudiu/alfurqan/internal/model"
 	userservice "github.com/apudiu/alfurqan/internal/modules/user/service"
@@ -9,10 +10,37 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
+	"time"
 )
 
-func SignIn(username, password string) (model.User, error) {
-	return model.User{}, nil
+func SignIn(email, password string) (user model.User, signedToken string, err error) {
+	// check if user exist with email
+	user, err = userservice.GetByEmail(email)
+	if err != nil {
+		err = errors.New("invalid credential")
+		return
+	}
+
+	// verify password
+	if !checkPasswordHash(password, user.Password) {
+		err = errors.New("invalid credential")
+		return
+	}
+
+	// make token
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = user.ID
+	claims["email"] = user.Email
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+	signedToken, err = token.SignedString([]byte(config.Config("KEY")))
+	if err != nil {
+		err = errors.New("token creation err")
+	}
+
+	return
 }
 
 func SignUp(u *model.User) error {
@@ -60,7 +88,7 @@ func validToken(t *jwt.Token, id string) bool {
 	}
 
 	claims := t.Claims.(jwt.MapClaims)
-	uid := int(claims["user_id"].(float64))
+	uid := int(claims["id"].(float64))
 
 	return uid == n
 }
@@ -72,14 +100,14 @@ func validUser(id string, p string) bool {
 	if user.Email == "" {
 		return false
 	}
-	if !CheckPasswordHash(p, user.Password) {
+	if !checkPasswordHash(p, user.Password) {
 		return false
 	}
 	return true
 }
 
-// CheckPasswordHash compare password with hash
-func CheckPasswordHash(password, hash string) bool {
+// checkPasswordHash compare password with hash
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }

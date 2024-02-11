@@ -1,13 +1,53 @@
 package authhandler
 
 import (
+	"errors"
 	"github.com/apudiu/alfurqan/internal/model"
 	authservice "github.com/apudiu/alfurqan/internal/modules/auth/service"
 	"github.com/gofiber/fiber/v2"
+	"net/mail"
 )
 
 func SignIn(c *fiber.Ctx) error {
-	return nil
+	type signInInput struct {
+		Email, Password string
+	}
+
+	input := new(signInInput)
+
+	if err := c.BodyParser(input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status": false,
+			"msg":    "Review your input",
+			"d":      err,
+		})
+	}
+
+	if !isEmail(input.Email) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status": false,
+			"msg":    "Review your input",
+			"d":      errors.New("invalid email address"),
+		})
+	}
+
+	user, token, err := authservice.SignIn(input.Email, input.Password)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status": false,
+			"msg":    "Review your input",
+			"d":      errors.New("invalid email address"),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status": true,
+		"msg":    "",
+		"d": fiber.Map{
+			"user":  user,
+			"token": token,
+		},
+	})
 }
 
 func SignUp(c *fiber.Ctx) error {
@@ -47,4 +87,11 @@ func RequestResetPassword(c *fiber.Ctx) error {
 
 func ResetPassword(c *fiber.Ctx) error {
 	return nil
+}
+
+// helpers
+
+func isEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
 }
