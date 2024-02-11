@@ -28,12 +28,13 @@ func SignIn(email, password string) (user model.User, signedToken string, err er
 	}
 
 	// make token
-	token := jwt.New(jwt.SigningMethodHS256)
+	claims := jwt.MapClaims{
+		"id":    user.ID,
+		"email": user.Email,
+		"ext":   time.Now().Add(time.Hour * 72).Unix(),
+	}
 
-	claims := token.Claims.(jwt.MapClaims)
-	claims["id"] = user.ID
-	claims["email"] = user.Email
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	signedToken, err = token.SignedString([]byte(config.Config("KEY")))
 	if err != nil {
@@ -64,6 +65,23 @@ func SignUp(u *model.User) error {
 
 func SignOut(c *fiber.Ctx) error {
 	return nil
+}
+
+func GetAuthUser(t *jwt.Token) (user model.User, err error) {
+	claims := t.Claims.(jwt.MapClaims)
+
+	id, found := claims["id"]
+	if !found {
+		err = errors.New("invalid user")
+		return
+	}
+
+	userId := id.(float64)
+
+	// retrieve the user
+	user, err = userservice.GetById(uint(userId))
+
+	return
 }
 
 func RequestResetPassword(c *fiber.Ctx) error {

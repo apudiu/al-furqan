@@ -9,6 +9,7 @@ import (
 func Setup(router fiber.Router) {
 	auth := router.Group("auth")
 
+	auth.Get("/me", middleware.Protected(), authhandler.AuthUser)
 	auth.Post("/sign-in", authhandler.SignIn)
 	auth.Post("/sign-up", authhandler.SignUp)
 	auth.Post("/sign-out", middleware.Protected(), authhandler.SignOut)

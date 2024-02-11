@@ -2,9 +2,11 @@ package authhandler
 
 import (
 	"errors"
+	"fmt"
 	"github.com/apudiu/alfurqan/internal/model"
 	authservice "github.com/apudiu/alfurqan/internal/modules/auth/service"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"net/mail"
 )
 
@@ -77,7 +79,27 @@ func SignUp(c *fiber.Ctx) error {
 	})
 }
 
+func AuthUser(c *fiber.Ctx) error {
+	token := c.Locals("user").(*jwt.Token)
+
+	user, err := authservice.GetAuthUser(token)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status": false,
+			"msg":    "Review your input",
+			"d":      err,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status": true,
+		"msg":    "",
+		"d":      user,
+	})
+}
+
 func SignOut(c *fiber.Ctx) error {
+	fmt.Println("IMPLEMENT SIGN OUT")
 	return nil
 }
 

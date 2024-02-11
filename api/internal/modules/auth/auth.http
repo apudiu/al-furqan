@@ -20,3 +20,12 @@ Authorization: Bearer {{token}}
 }
 > {% client.global.set('token', response.body.d.token) %}
 
+### Auth user
+GET {{baseUrl}}/{{ver}}/auth/me
+Authorization: Bearer {{token}}
+
+### Signout ---
+POST {{baseUrl}}/{{ver}}/auth/sign-out
+Authorization: Bearer {{token}}
+
+> {% client.global.set('token', '') %}
