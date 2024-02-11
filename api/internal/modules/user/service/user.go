@@ -6,9 +6,7 @@ import (
 )
 
 func Create(u *model.User) error {
-	res := database.DB.Omit(
-		"id", "created_at", "updated_at", "updated_at",
-	).Create(u)
+	res := database.DB.Create(u)
 
 	if res.Error != nil {
 		return res.Error

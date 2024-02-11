@@ -1,0 +1,9 @@
+### Signup
+POST {{baseUrl}}/{{ver}}/auth/sign-up
+Content-Type: application/json
+
+{
+  "name": "M.d. A. Apu",
+  "email": "apuatcfbd@gmail.com",
+  "password": "1234"
+}

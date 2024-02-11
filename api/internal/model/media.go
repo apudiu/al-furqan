@@ -1,7 +1,7 @@
 package model
 
 type Media struct {
-	baseModel
+	BaseModel
 	Name string `json:"name" gorm:"not null"`
 	Path string `json:"path" gorm:"not null"`
 }
