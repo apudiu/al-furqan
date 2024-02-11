@@ -3,13 +3,11 @@ package authservice
 import (
 	"errors"
 	"github.com/apudiu/alfurqan/config"
-	"github.com/apudiu/alfurqan/database"
 	"github.com/apudiu/alfurqan/internal/model"
 	userservice "github.com/apudiu/alfurqan/internal/modules/user/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"strconv"
 	"time"
 )
 
@@ -28,15 +26,7 @@ func SignIn(email, password string) (user model.User, signedToken string, err er
 	}
 
 	// make token
-	claims := jwt.MapClaims{
-		"id":    user.ID,
-		"email": user.Email,
-		"ext":   time.Now().Add(time.Hour * 72).Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	signedToken, err = token.SignedString([]byte(config.Config("KEY")))
+	signedToken, err = makeUserToken(&user)
 	if err != nil {
 		err = errors.New("token creation err")
 	}
@@ -44,23 +34,30 @@ func SignIn(email, password string) (user model.User, signedToken string, err er
 	return
 }
 
-func SignUp(u *model.User) error {
+func SignUp(u *model.User) (token string, err error) {
 	// check if user doesn't exist with email
-	_, err := userservice.GetByEmail(u.Email)
+	_, err = userservice.GetByEmail(u.Email)
 	if err == nil {
-		return errors.New(u.Email + " already taken")
+		err = errors.New(u.Email + " already taken")
+		return
 	}
 
 	// create user
 
 	pwHash, err := hashPassword(u.Password)
 	if err != nil {
-		return err
+		return
 	}
 	u.Password = pwHash
 
 	err = userservice.Create(u)
-	return err
+	if err != nil {
+		return
+	}
+
+	// make token
+	token, err = makeUserToken(u)
+	return
 }
 
 func SignOut(c *fiber.Ctx) error {
@@ -99,33 +96,21 @@ func hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func validToken(t *jwt.Token, id string) bool {
-	n, err := strconv.Atoi(id)
-	if err != nil {
-		return false
-	}
-
-	claims := t.Claims.(jwt.MapClaims)
-	uid := int(claims["id"].(float64))
-
-	return uid == n
-}
-
-func validUser(id string, p string) bool {
-	db := database.DB
-	var user model.User
-	db.First(&user, id)
-	if user.Email == "" {
-		return false
-	}
-	if !checkPasswordHash(p, user.Password) {
-		return false
-	}
-	return true
-}
-
 // checkPasswordHash compare password with hash
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func makeUserToken(u *model.User) (token string, err error) {
+	claims := jwt.MapClaims{
+		"id":    u.ID,
+		"email": u.Email,
+		"ext":   time.Now().Add(time.Hour * 72).Unix(),
+	}
+
+	rawToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	token, err = rawToken.SignedString([]byte(config.Config("KEY")))
+	return
 }

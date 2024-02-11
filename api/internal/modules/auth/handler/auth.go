@@ -63,7 +63,7 @@ func SignUp(c *fiber.Ctx) error {
 		})
 	}
 
-	err := authservice.SignUp(user)
+	token, err := authservice.SignUp(user)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status": false,
@@ -75,7 +75,10 @@ func SignUp(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"status": true,
 		"msg":    "Successfully registered.",
-		"d":      user,
+		"d": fiber.Map{
+			"user":  user,
+			"token": token,
+		},
 	})
 }
 
