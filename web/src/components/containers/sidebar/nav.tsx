@@ -4,8 +4,6 @@ import { navigationLinks } from '~/lib/routes';
 const SideNav = () => {
   const location = useLocation();
 
-  console.log(location);
-
   return (
     <nav class="min-h-60">
       <ul class="flex flex-col gap-8">
