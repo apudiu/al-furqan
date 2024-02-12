@@ -44,8 +44,14 @@ func ConnectDB() {
 	fmt.Println("Connection Opened to Database")
 
 	// auto migrate
-	DB.AutoMigrate(
+	mgErr := DB.AutoMigrate(
 		&model.User{},
+		&model.Media{},
 	)
+	if mgErr != nil {
+		fmt.Println("Auto migration err", mgErr.Error())
+		return
+	}
+
 	fmt.Println("Database Migrated")
 }

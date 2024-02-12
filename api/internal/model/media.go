@@ -1,7 +1,13 @@
 package model
 
 type Media struct {
-	BaseModel
+	ID uint `json:"id" gorm:"primaryKey"`
+
 	Name string `json:"name" gorm:"not null"`
 	Path string `json:"path" gorm:"not null"`
+	Type string `json:"type" gorm:"not null"`
+	Size string `json:"size" gorm:"not null"`
+
+	OwnerID   uint   `json:"owner_id"`
+	OwnerType string `json:"owner_type"`
 }
