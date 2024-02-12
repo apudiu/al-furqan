@@ -2,6 +2,7 @@ package userhandler
 
 import (
 	"github.com/apudiu/alfurqan/database"
+	"github.com/apudiu/alfurqan/internal/hs"
 	"github.com/apudiu/alfurqan/internal/model"
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,19 +16,17 @@ func GetUsers(c *fiber.Ctx) error {
 
 	// If no user is present return an error
 	if len(users) == 0 {
-		return c.Status(404).JSON(fiber.Map{
-			"status":  "error",
-			"message": "No users present",
-			"data":    nil,
-		})
+		return c.Status(fiber.StatusNotFound).JSON(hs.Res(hs.ResData{
+			Msg: "No users present",
+		}))
 	}
 
 	// Else return users
-	return c.JSON(fiber.Map{
-		"status":  "success",
-		"message": "Users Found",
-		"data":    users,
-	})
+	return c.JSON(hs.Res(hs.ResData{
+		Status: true,
+		Msg:    "Users found",
+		D:      users,
+	}))
 }
 
 func CreateUsers(c *fiber.Ctx) error {
@@ -37,29 +36,27 @@ func CreateUsers(c *fiber.Ctx) error {
 	// Store the body in the user and return error if encountered
 	err := c.BodyParser(user)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Review your input",
-			"data":    err,
-		})
+		return c.Status(fiber.StatusInternalServerError).JSON(hs.Res(hs.ResData{
+			Msg: "Review your input",
+			D:   err,
+		}))
 	}
 
 	// Create the User and return error if encountered
 	err = db.Create(&user).Error
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Could not create user",
-			"data":    err,
-		})
+		return c.Status(fiber.StatusInternalServerError).JSON(hs.Res(hs.ResData{
+			Msg: "Could not create user",
+			D:   err,
+		}))
 	}
 
 	// Return the created user
-	return c.JSON(fiber.Map{
-		"status":  "success",
-		"message": "Created User",
-		"data":    user,
-	})
+	return c.JSON(hs.Res(hs.ResData{
+		Status: true,
+		Msg:    "Created user",
+		D:      user,
+	}))
 }
 
 func GetUser(c *fiber.Ctx) error {
@@ -74,19 +71,17 @@ func GetUser(c *fiber.Ctx) error {
 
 	// If no such user present return an error
 	if user.ID == 0 {
-		return c.Status(404).JSON(fiber.Map{
-			"status":  "error",
-			"message": "No user present",
-			"data":    nil,
-		})
+		return c.Status(fiber.StatusNotFound).JSON(hs.Res(hs.ResData{
+			Msg: "No user present",
+		}))
 	}
 
 	// Return the user with the Id
-	return c.JSON(fiber.Map{
-		"status":  "success",
-		"message": "Users Found",
-		"data":    user,
-	})
+	return c.JSON(hs.Res(hs.ResData{
+		Status: true,
+		Msg:    "Users found",
+		D:      user,
+	}))
 }
 
 func UpdateUser(c *fiber.Ctx) error {
@@ -105,22 +100,19 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	// If no such user present return an error
 	if user.ID == 0 {
-		return c.Status(404).JSON(fiber.Map{
-			"status":  "error",
-			"message": "No user present",
-			"data":    nil,
-		})
+		return c.Status(fiber.StatusNotFound).JSON(hs.Res(hs.ResData{
+			Msg: "No user present",
+		}))
 	}
 
 	// Store the body containing the updated data and return error if encountered
 	var updateUserData updateUser
 	err := c.BodyParser(&updateUserData)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Review your input",
-			"data":    err,
-		})
+		return c.Status(fiber.StatusInternalServerError).JSON(hs.Res(hs.ResData{
+			Msg: "Review your input",
+			D:   err,
+		}))
 	}
 
 	// Edit the user
@@ -131,11 +123,11 @@ func UpdateUser(c *fiber.Ctx) error {
 	db.Save(&user)
 
 	// Return the updated user
-	return c.JSON(fiber.Map{
-		"status":  "success",
-		"message": "Notes Found",
-		"data":    user,
-	})
+	return c.JSON(hs.Res(hs.ResData{
+		Status: true,
+		Msg:    "Users found",
+		D:      user,
+	}))
 }
 
 func DeleteUser(c *fiber.Ctx) error {
@@ -150,27 +142,23 @@ func DeleteUser(c *fiber.Ctx) error {
 
 	// If no such user present return an error
 	if user.ID == 0 {
-		return c.Status(404).JSON(fiber.Map{
-			"status":  "error",
-			"message": "No user present",
-			"data":    nil,
-		})
+		return c.Status(fiber.StatusNotFound).JSON(hs.Res(hs.ResData{
+			Msg: "No user present",
+		}))
 	}
 
 	// Delete the user and return error if encountered
 	err := db.Delete(&user, "id = ?", id).Error
 
 	if err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Failed to delete user",
-			"data":    nil,
-		})
+		return c.Status(404).JSON(hs.Res(hs.ResData{
+			Msg: "Failed to delete user",
+		}))
 	}
 
 	// Return success message
-	return c.JSON(fiber.Map{
-		"status":  "success",
-		"message": "Deleted User",
-	})
+	return c.JSON(hs.Res(hs.ResData{
+		Status: true,
+		Msg:    "Deleted User",
+	}))
 }
