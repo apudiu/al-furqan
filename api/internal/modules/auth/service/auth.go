@@ -2,7 +2,9 @@ package authservice
 
 import (
 	"errors"
+	"fmt"
 	"github.com/apudiu/alfurqan/config"
+	"github.com/apudiu/alfurqan/internal/helpers"
 	"github.com/apudiu/alfurqan/internal/model"
 	userservice "github.com/apudiu/alfurqan/internal/modules/user/service"
 	"github.com/gofiber/fiber/v2"
@@ -65,19 +67,15 @@ func SignOut(c *fiber.Ctx) error {
 }
 
 func GetAuthUser(t *jwt.Token) (user model.User, err error) {
-	claims := t.Claims.(jwt.MapClaims)
-
-	id, found := claims["id"]
-	if !found {
-		err = errors.New("invalid user")
-		return
+	tp := helpers.NewEmptyTokenPayload()
+	ok := tp.ParseFromJwt(t)
+	fmt.Printf("tp: %+v\n", tp)
+	if !ok {
+		err = errors.New("invalid token")
 	}
 
-	userId := id.(float64)
-
 	// retrieve the user
-	user, err = userservice.GetById(uint(userId))
-
+	user, err = userservice.GetById(tp.Sub)
 	return
 }
 
@@ -103,11 +101,10 @@ func checkPasswordHash(password, hash string) bool {
 }
 
 func makeUserToken(u *model.User) (token string, err error) {
-	claims := jwt.MapClaims{
-		"id":    u.ID,
-		"email": u.Email,
-		"ext":   time.Now().Add(time.Hour * 72).Unix(),
-	}
+	expiry := time.Now().Add(time.Hour * 72).Unix()
+
+	tokenPayload := helpers.NewTokenPayload(u.ID, u.Email, float64(expiry))
+	claims := tokenPayload.ToJwtMapClaims()
 
 	rawToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

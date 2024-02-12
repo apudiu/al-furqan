@@ -3,10 +3,10 @@ package authhandler
 import (
 	"errors"
 	"fmt"
+	"github.com/apudiu/alfurqan/internal/helpers"
 	"github.com/apudiu/alfurqan/internal/model"
 	authservice "github.com/apudiu/alfurqan/internal/modules/auth/service"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"net/mail"
 )
 
@@ -83,7 +83,10 @@ func SignUp(c *fiber.Ctx) error {
 }
 
 func AuthUser(c *fiber.Ctx) error {
-	token := c.Locals("user").(*jwt.Token)
+	token, ok := helpers.GetToken(c)
+	if !ok {
+		return errors.New("failed to parse token")
+	}
 
 	user, err := authservice.GetAuthUser(token)
 	if err != nil {

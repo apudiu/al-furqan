@@ -9,6 +9,8 @@ Authorization: Bearer {{token}}
   "password": "1234"
 }
 
+> {% client.global.set('token', response.body.d.token) %}
+
 ###
 
 # @name Signin
