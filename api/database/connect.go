@@ -47,6 +47,8 @@ func ConnectDB() {
 	mgErr := DB.AutoMigrate(
 		&model.User{},
 		&model.Media{},
+		&model.Surah{},
+		&model.Ayat{},
 	)
 	if mgErr != nil {
 		fmt.Println("Auto migration err", mgErr.Error())
