@@ -1,7 +1,7 @@
 import { A } from '@solidjs/router';
 import { navigationLinks } from '~/lib/routes';
 
-const Navbar = () => {
+const SideNav = () => {
   return (
     <nav class="min-h-60">
       <ul class="flex flex-col gap-8">
@@ -21,4 +21,4 @@ const Navbar = () => {
     </nav>
   );
 };
-export default Navbar;
+export default SideNav;

@@ -1,5 +1,5 @@
 import { A } from '@solidjs/router';
-import Navbar from './nav';
+import SideNav from './nav';
 import Logo from '~/components/ui/logo';
 import { routePaths } from '~/lib/routes';
 
@@ -10,8 +10,8 @@ const Sidebar = () => {
         <Logo />
       </A>
       <div class="flex flex-col justify-between h-full max-h-[calc(100vh_-_100px)]">
-        <Navbar />
-        <div class="text-white">A</div>
+        <SideNav />
+        <footer class="text-white">Footer</footer>
       </div>
     </aside>
   );
