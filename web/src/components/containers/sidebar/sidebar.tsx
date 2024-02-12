@@ -5,14 +5,11 @@ import { routePaths } from '~/lib/routes';
 
 const Sidebar = () => {
   return (
-    <aside class="bg-primary h-screen max-h-screen overflow-y-auto overflow-x-hidden p-5 space-y-8">
-      <A href={routePaths.home} class="h-10">
+    <aside class="bg-primary h-screen max-h-screen overflow-y-auto overflow-x-hidden p-5 pb-20 flex flex-col gap-y-8">
+      <A href={routePaths.home}>
         <Logo />
       </A>
-      <div class="flex flex-col justify-between h-full max-h-[calc(100vh_-_100px)]">
-        <SideNav />
-        <footer class="text-white">Footer</footer>
-      </div>
+      <SideNav />
     </aside>
   );
 };

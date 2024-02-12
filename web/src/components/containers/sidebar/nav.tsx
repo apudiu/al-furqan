@@ -1,7 +1,11 @@
-import { A } from '@solidjs/router';
+import { A, useLocation } from '@solidjs/router';
 import { navigationLinks } from '~/lib/routes';
 
 const SideNav = () => {
+  const location = useLocation();
+
+  console.log(location);
+
   return (
     <nav class="min-h-60">
       <ul class="flex flex-col gap-8">
@@ -10,6 +14,9 @@ const SideNav = () => {
             <A
               href={navLink.href}
               class="flex gap-2 text-primary-foreground text-md tracking-wider hover:opacity-90 items-end"
+              classList={{
+                'font-semibold': location.pathname === navLink.href,
+              }}
             >
               {navLink.icon && <navLink.icon />}
 
