@@ -3,7 +3,6 @@ package userservice
 import (
 	"crypto/md5"
 	"github.com/apudiu/alfurqan/database"
-	"github.com/apudiu/alfurqan/internal/helpers"
 	"github.com/apudiu/alfurqan/internal/model"
 )
 
@@ -39,7 +38,7 @@ func UpdateTokenHash(user *model.User, token string) bool {
 	// calculate token sum only if token is available
 	if len(token) > 1 {
 		tokenSum := md5.Sum([]byte(token))
-		ht, err := helpers.HashStr(string(tokenSum[:]), 10)
+		ht, err := h.HashStr(string(tokenSum[:]), 10)
 		if err != nil {
 			return false
 		}

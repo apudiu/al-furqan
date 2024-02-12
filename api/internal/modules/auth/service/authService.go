@@ -3,7 +3,7 @@ package authservice
 import (
 	"errors"
 	"github.com/apudiu/alfurqan/config"
-	"github.com/apudiu/alfurqan/internal/helpers"
+	"github.com/apudiu/alfurqan/internal/hs"
 	"github.com/apudiu/alfurqan/internal/model"
 	userservice "github.com/apudiu/alfurqan/internal/modules/user/service"
 	"github.com/gofiber/fiber/v2"
@@ -51,7 +51,7 @@ func SignUp(u *model.User) (signedToken string, err error) {
 
 	// create user
 
-	pwHash, err := helpers.HashStr(u.Password, 14)
+	pwHash, err := hs.HashStr(u.Password, 14)
 	if err != nil {
 		return
 	}
@@ -77,7 +77,7 @@ func SignUp(u *model.User) (signedToken string, err error) {
 }
 
 func SignOut(t *jwt.Token) error {
-	tp := helpers.NewEmptyTokenPayload()
+	tp := hs.NewEmptyTokenPayload()
 	ok := tp.ParseFromJwt(t)
 	if !ok {
 		return errors.New("failed to parse token")
@@ -98,7 +98,7 @@ func SignOut(t *jwt.Token) error {
 }
 
 func GetAuthUser(t *jwt.Token) (user model.User, err error) {
-	tp := helpers.NewEmptyTokenPayload()
+	tp := hs.NewEmptyTokenPayload()
 	ok := tp.ParseFromJwt(t)
 
 	if !ok {
@@ -129,7 +129,7 @@ func checkPasswordHash(password, hash string) bool {
 func makeUserToken(u *model.User) (token string, err error) {
 	expiry := time.Now().Add(time.Hour * 72).Unix()
 
-	tokenPayload := helpers.NewTokenPayload(u.ID, u.Email, float64(expiry))
+	tokenPayload := hs.NewTokenPayload(u.ID, u.Email, float64(expiry))
 	claims := tokenPayload.ToJwtMapClaims()
 
 	rawToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

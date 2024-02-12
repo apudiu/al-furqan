@@ -2,7 +2,6 @@ package authhandler
 
 import (
 	"errors"
-	"github.com/apudiu/alfurqan/internal/helpers"
 	"github.com/apudiu/alfurqan/internal/model"
 	authservice "github.com/apudiu/alfurqan/internal/modules/auth/service"
 	"github.com/gofiber/fiber/v2"
@@ -82,7 +81,7 @@ func SignUp(c *fiber.Ctx) error {
 }
 
 func AuthUser(c *fiber.Ctx) error {
-	token, ok := helpers.GetToken(c)
+	token, ok := h.GetToken(c)
 	if !ok {
 		return errors.New("failed to parse token")
 	}
@@ -104,22 +103,19 @@ func AuthUser(c *fiber.Ctx) error {
 }
 
 func SignOut(c *fiber.Ctx) error {
-	token, ok := helpers.GetToken(c)
+	token, ok := h.GetToken(c)
 	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"status": false,
-			"msg":    "Review your input",
-			"d":      nil,
-		})
+		return c.Status(fiber.StatusUnauthorized).JSON(h.Res(h.ResData{
+			Msg: "Review your input",
+		}))
 	}
 
 	err := authservice.SignOut(token)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status": false,
-			"msg":    "Error signing out",
-			"d":      err,
-		})
+		return c.Status(fiber.StatusInternalServerError).JSON(h.Res(h.ResData{
+			Msg: "Error signing out",
+			D:   err,
+		}))
 	}
 
 	return c.JSON(fiber.Map{
