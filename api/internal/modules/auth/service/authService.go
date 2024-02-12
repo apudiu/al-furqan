@@ -2,7 +2,6 @@ package authservice
 
 import (
 	"errors"
-	"fmt"
 	"github.com/apudiu/alfurqan/config"
 	"github.com/apudiu/alfurqan/internal/helpers"
 	"github.com/apudiu/alfurqan/internal/model"
@@ -33,10 +32,16 @@ func SignIn(email, password string) (user model.User, signedToken string, err er
 		err = errors.New("token creation err")
 	}
 
+	// save token hash to db
+	ok := userservice.UpdateTokenHash(&user, signedToken)
+	if !ok {
+		err = errors.New("token update err")
+	}
+
 	return
 }
 
-func SignUp(u *model.User) (token string, err error) {
+func SignUp(u *model.User) (signedToken string, err error) {
 	// check if user doesn't exist with email
 	_, err = userservice.GetByEmail(u.Email)
 	if err == nil {
@@ -46,7 +51,7 @@ func SignUp(u *model.User) (token string, err error) {
 
 	// create user
 
-	pwHash, err := hashPassword(u.Password)
+	pwHash, err := helpers.HashStr(u.Password, 14)
 	if err != nil {
 		return
 	}
@@ -58,18 +63,44 @@ func SignUp(u *model.User) (token string, err error) {
 	}
 
 	// make token
-	token, err = makeUserToken(u)
+	signedToken, err = makeUserToken(u)
+	if err != nil {
+		return
+	}
+
+	// save token hash to db
+	ok := userservice.UpdateTokenHash(u, signedToken)
+	if !ok {
+		err = errors.New("token update err")
+	}
 	return
 }
 
-func SignOut(c *fiber.Ctx) error {
+func SignOut(t *jwt.Token) error {
+	tp := helpers.NewEmptyTokenPayload()
+	ok := tp.ParseFromJwt(t)
+	if !ok {
+		return errors.New("failed to parse token")
+	}
+
+	// delete saved token
+	user, err := userservice.GetById(tp.Sub)
+	if err != nil {
+		return err
+	}
+
+	ok = userservice.UpdateTokenHash(&user, "")
+	if !ok {
+		return errors.New("failed to reset token")
+	}
+
 	return nil
 }
 
 func GetAuthUser(t *jwt.Token) (user model.User, err error) {
 	tp := helpers.NewEmptyTokenPayload()
 	ok := tp.ParseFromJwt(t)
-	fmt.Printf("tp: %+v\n", tp)
+
 	if !ok {
 		err = errors.New("invalid token")
 	}
@@ -88,11 +119,6 @@ func ResetPassword(c *fiber.Ctx) error {
 }
 
 // helpers
-
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
 
 // checkPasswordHash compare password with hash
 func checkPasswordHash(password, hash string) bool {

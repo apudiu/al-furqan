@@ -2,7 +2,6 @@ package authhandler
 
 import (
 	"errors"
-	"fmt"
 	"github.com/apudiu/alfurqan/internal/helpers"
 	"github.com/apudiu/alfurqan/internal/model"
 	authservice "github.com/apudiu/alfurqan/internal/modules/auth/service"
@@ -105,8 +104,29 @@ func AuthUser(c *fiber.Ctx) error {
 }
 
 func SignOut(c *fiber.Ctx) error {
-	fmt.Println("IMPLEMENT SIGN OUT")
-	return nil
+	token, ok := helpers.GetToken(c)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status": false,
+			"msg":    "Review your input",
+			"d":      nil,
+		})
+	}
+
+	err := authservice.SignOut(token)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status": false,
+			"msg":    "Error signing out",
+			"d":      err,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status": true,
+		"msg":    "Signed Out",
+		"d":      nil,
+	})
 }
 
 func RequestResetPassword(c *fiber.Ctx) error {
