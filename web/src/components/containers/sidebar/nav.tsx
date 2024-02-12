@@ -1,4 +1,5 @@
 import { A, useLocation } from '@solidjs/router';
+import { createMemo } from 'solid-js';
 import { navigationLinks } from '~/lib/routes';
 
 const SideNav = () => {
