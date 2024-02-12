@@ -3,6 +3,7 @@ package userservice
 import (
 	"crypto/md5"
 	"github.com/apudiu/alfurqan/database"
+	"github.com/apudiu/alfurqan/internal/hs"
 	"github.com/apudiu/alfurqan/internal/model"
 )
 
