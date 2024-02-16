@@ -2,12 +2,15 @@ package model
 
 import "time"
 
-type Language struct {
+type AudioFile struct {
 	ID uint `json:"id" gorm:"primaryKey"`
 
-	Name string `json:"name" gorm:"type:varchar(30); not null;"`
+	FilePath string `json:"file_path"`
 
-	Accents []Accent `json:"accents"`
+	AyatID   uint   `json:"ayat_id"`
+	Ayat     Ayat   `json:"ayat"`
+	AccentID uint   `json:"accent_id"`
+	Accent   Accent `json:"accent"`
 
 	CreatedAt time.Time `json:"created_at" gorm:"type:datetime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"type:datetime"`

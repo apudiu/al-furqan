@@ -31,11 +31,4 @@ Data we've:
 1. ayat_id
 2. lng_id
 3. accent_id
-
-select * from "audios"
-left join "lng"
-on
-where
-ayat_id = 1
-accent_id = 1
     
