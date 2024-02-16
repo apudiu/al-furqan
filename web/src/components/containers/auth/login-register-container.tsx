@@ -1,13 +1,17 @@
+import { createSignal } from 'solid-js';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
+import { TextInput } from '~/components/ui/text-input';
 
 const LoginRegisterContainer = () => {
+  const [openModal, setOpenModal] = createSignal(false);
+
   return (
-    <Dialog>
+    <Dialog open={openModal()} onOpenChange={setOpenModal}>
       <DialogTrigger>
         <Button>Login</Button>
       </DialogTrigger>
@@ -25,8 +29,9 @@ const LoginRegisterContainer = () => {
               </CardHeader>
               <CardContent class="space-y-2">
                 <div class="space-y-1">
-                  <Label for="email">Email</Label>
-                  <Input id="email" />
+                  {/* <Label for="email">Email</Label>
+                  <Input id="email" /> */}
+                  <TextInput name="email" label="Email" error="" />
                 </div>
                 <div class="space-y-1">
                   <Label for="password">password</Label>
@@ -46,8 +51,9 @@ const LoginRegisterContainer = () => {
               </CardHeader>
               <CardContent class="space-y-2">
                 <div class="space-y-1">
-                  <Label for="name">Name</Label>
-                  <Input id="name" />
+                  {/* <Label for="name">Name</Label> */}
+                  {/* <Input id="name" /> */}
+                  <TextInput name="name" label="Name" error="" />
                 </div>
 
                 <div class="space-y-1">
