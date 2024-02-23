@@ -10,7 +10,7 @@ import (
 
 func SetupRoutes(e *echo.Echo) {
 	// versioning
-	apiVer := e.Group("v1")
+	apiVer := e.Group("/v1")
 
 	// Register public routes
 	authRoutes.SetupPublic(apiVer)

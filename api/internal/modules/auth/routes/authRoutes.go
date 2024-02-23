@@ -6,7 +6,7 @@ import (
 )
 
 func SetupPublic(router *echo.Group) {
-	auth := router.Group("auth")
+	auth := router.Group("/auth")
 
 	auth.POST("/sign-in", authhandler.SignIn)
 	auth.POST("/sign-up", authhandler.SignUp)
@@ -15,7 +15,7 @@ func SetupPublic(router *echo.Group) {
 }
 
 func SetupPrivate(router *echo.Group) {
-	auth := router.Group("auth")
+	auth := router.Group("/auth")
 
 	auth.GET("/me", authhandler.AuthUser)
 	auth.POST("/sign-out", authhandler.SignOut)

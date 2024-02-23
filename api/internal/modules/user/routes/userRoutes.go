@@ -6,7 +6,7 @@ import (
 )
 
 func SetupPublic(router *echo.Group) {
-	user := router.Group("user")
+	user := router.Group("/user")
 
 	// Read all
 	user.GET("/", userHandler.GetUsers)
