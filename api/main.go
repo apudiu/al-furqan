@@ -7,10 +7,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
 	e := echo.New()
+	//todo: parse .env file
+	isLocal := os.Getenv("DEBUG") == "1"
+	e.Debug = isLocal
 
 	// connect to DB
 	database.ConnectDB()
@@ -24,7 +28,9 @@ func main() {
 	router.SetupRoutes(e)
 
 	// print routes
-	printRoutes(e.Routes())
+	if isLocal {
+		printRoutes(e.Routes())
+	}
 
 	log.Fatalln(
 		e.Start(":3001"),
