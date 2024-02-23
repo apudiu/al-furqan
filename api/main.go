@@ -5,36 +5,31 @@ import (
 	"fmt"
 	"github.com/apudiu/alfurqan/database"
 	"github.com/apudiu/alfurqan/router"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/labstack/echo/v4"
 	"log"
+	"net/http"
 )
 
 func main() {
-	app := fiber.New()
-
-	app.Use(
-		logger.New(),
-		cors.New(),
-	)
+	e := echo.New()
 
 	// connect to DB
 	database.ConnectDB()
 
+	// home route (public)
+	e.GET("/", func(ctx echo.Context) error {
+		return ctx.String(http.StatusOK, "Alhum-du-lillah")
+	})
+
 	// setup router
-	router.SetupRoutes(app)
+	router.SetupRoutes(e)
 
 	// print routes
-	rs := app.GetRoutes(true)
+	rs := e.Routes()
 	rj, _ := json.MarshalIndent(rs, "", "  ")
 	fmt.Println(string(rj))
 
-	app.Get("/", func(ctx *fiber.Ctx) error {
-		return ctx.SendString("Alhum-du-lillah")
-	})
-
 	log.Fatalln(
-		app.Listen(":3001"),
+		e.Start(":3001"),
 	)
 }

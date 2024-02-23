@@ -2,22 +2,25 @@ package userroutes
 
 import (
 	userHandler "github.com/apudiu/alfurqan/internal/modules/user/handler"
-	"github.com/apudiu/alfurqan/middleware"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 )
 
-func Setup(router fiber.Router) {
+func SetupPublic(router *echo.Group) {
 	user := router.Group("user")
-	//userProtected := user.Group("", middleware.Protected())
 
 	// Read all
-	user.Get("/", userHandler.GetUsers)
+	user.GET("/", userHandler.GetUsers)
 	// Create one
-	user.Post("/", userHandler.CreateUsers)
-	// Read one
-	user.Get("/:userId", middleware.Protected(), userHandler.GetUser)
+	user.POST("/", userHandler.CreateUsers)
 	// Update one
-	user.Put("/:userId", userHandler.UpdateUser)
+	user.PATCH("/:userId", userHandler.UpdateUser)
 	// Delete one
-	user.Delete("/:userId", userHandler.DeleteUser)
+	user.DELETE("/:userId", userHandler.DeleteUser)
+}
+
+func SetupPrivate(router *echo.Group) {
+	user := router.Group("user")
+
+	// Read one
+	user.GET("/:userId", userHandler.GetUser)
 }

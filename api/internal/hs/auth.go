@@ -1,18 +1,16 @@
 package hs
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
+	"log"
 )
 
-func GetToken(c *fiber.Ctx) (token *jwt.Token, ok bool) {
-	userInCtx := c.Locals("user")
-	if userInCtx == nil {
-		return
+func GetToken(c echo.Context) (token *jwt.Token, ok bool) {
+	token, ok = c.Get("user").(*jwt.Token)
+	if !ok {
+		log.Println("JWT token missing or invalid")
 	}
-
-	ok = true
-	token = userInCtx.(*jwt.Token)
 	return
 }
 
@@ -23,7 +21,7 @@ type TokenPayload struct {
 	Exp   float64 `json:"exp"`
 }
 
-func (tp *TokenPayload) ParseFromCtx(ctx *fiber.Ctx) bool {
+func (tp *TokenPayload) ParseFromCtx(ctx echo.Context) bool {
 	token, ok := GetToken(ctx)
 	if !ok {
 		return ok

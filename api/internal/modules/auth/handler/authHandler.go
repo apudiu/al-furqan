@@ -5,26 +5,26 @@ import (
 	"github.com/apudiu/alfurqan/internal/hs"
 	"github.com/apudiu/alfurqan/internal/model"
 	authservice "github.com/apudiu/alfurqan/internal/modules/auth/service"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
+	"net/http"
 	"net/mail"
 )
 
-func SignIn(c *fiber.Ctx) error {
+func SignIn(c echo.Context) error {
 	type signInInput struct {
 		Email, Password string
 	}
 
 	input := new(signInInput)
-
-	if err := c.BodyParser(input); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(hs.Res(hs.ResData{
+	if err := c.Bind(&input); err != nil {
+		return c.JSON(http.StatusBadRequest, hs.Res(hs.ResData{
 			Msg: "Review your input",
 			D:   err,
 		}))
 	}
 
 	if !isEmail(input.Email) {
-		return c.Status(fiber.StatusBadRequest).JSON(hs.Res(hs.ResData{
+		return c.JSON(http.StatusBadRequest, hs.Res(hs.ResData{
 			Msg: "Review your input",
 			D:   errors.New("invalid email address"),
 		}))
@@ -32,26 +32,26 @@ func SignIn(c *fiber.Ctx) error {
 
 	user, token, err := authservice.SignIn(input.Email, input.Password)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(hs.Res(hs.ResData{
+		return c.JSON(http.StatusBadRequest, hs.Res(hs.ResData{
 			Msg: "Review your input",
 			D:   errors.New("invalid email address"),
 		}))
 	}
 
-	return c.JSON(hs.Res(hs.ResData{
+	return c.JSON(http.StatusOK, hs.Res(hs.ResData{
 		Status: true,
-		D: fiber.Map{
+		D: hs.AnyMap{
 			"user":  user,
 			"token": token,
 		},
 	}))
 }
 
-func SignUp(c *fiber.Ctx) error {
+func SignUp(c echo.Context) error {
 	user := new(model.User)
 
-	if err := c.BodyParser(user); err != nil {
-		return c.Status(500).JSON(hs.Res(hs.ResData{
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusInternalServerError, hs.Res(hs.ResData{
 			Msg: "Review your input",
 			D:   err,
 		}))
@@ -59,23 +59,23 @@ func SignUp(c *fiber.Ctx) error {
 
 	token, err := authservice.SignUp(user)
 	if err != nil {
-		return c.Status(500).JSON(hs.Res(hs.ResData{
+		return c.JSON(http.StatusInternalServerError, hs.Res(hs.ResData{
 			Msg: "User creation failed",
 			D:   err,
 		}))
 	}
 
-	return c.JSON(hs.Res(hs.ResData{
+	return c.JSON(http.StatusOK, hs.Res(hs.ResData{
 		Status: true,
 		Msg:    "Successfully registered",
-		D: fiber.Map{
+		D: hs.AnyMap{
 			"user":  user,
 			"token": token,
 		},
 	}))
 }
 
-func AuthUser(c *fiber.Ctx) error {
+func AuthUser(c echo.Context) error {
 	token, ok := hs.GetToken(c)
 	if !ok {
 		return errors.New("failed to parse token")
@@ -83,44 +83,44 @@ func AuthUser(c *fiber.Ctx) error {
 
 	user, err := authservice.GetAuthUser(token)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(hs.Res(hs.ResData{
+		return c.JSON(http.StatusUnauthorized, hs.Res(hs.ResData{
 			D: err,
 		}))
 	}
 
-	return c.JSON(hs.Res(hs.ResData{
+	return c.JSON(http.StatusOK, hs.Res(hs.ResData{
 		Status: true,
 		D:      user,
 	}))
 }
 
-func SignOut(c *fiber.Ctx) error {
+func SignOut(c echo.Context) error {
 	token, ok := hs.GetToken(c)
 	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(hs.Res(hs.ResData{
+		return c.JSON(http.StatusUnauthorized, hs.Res(hs.ResData{
 			Msg: "Review your input",
 		}))
 	}
 
 	err := authservice.SignOut(token)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(hs.Res(hs.ResData{
+		return c.JSON(http.StatusInternalServerError, hs.Res(hs.ResData{
 			Msg: "Error signing out",
 			D:   err,
 		}))
 	}
 
-	return c.JSON(hs.Res(hs.ResData{
+	return c.JSON(http.StatusOK, hs.Res(hs.ResData{
 		Status: true,
 		Msg:    "Signed Out",
 	}))
 }
 
-func RequestResetPassword(c *fiber.Ctx) error {
+func RequestResetPassword(c echo.Context) error {
 	return nil
 }
 
-func ResetPassword(c *fiber.Ctx) error {
+func ResetPassword(c echo.Context) error {
 	return nil
 }
 

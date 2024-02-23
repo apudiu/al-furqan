@@ -6,8 +6,8 @@ import (
 	"github.com/apudiu/alfurqan/internal/hs"
 	"github.com/apudiu/alfurqan/internal/model"
 	userservice "github.com/apudiu/alfurqan/internal/modules/user/service"
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -110,11 +110,11 @@ func GetAuthUser(t *jwt.Token) (user model.User, err error) {
 	return
 }
 
-func RequestResetPassword(c *fiber.Ctx) error {
+func RequestResetPassword(c echo.Context) error {
 	return nil
 }
 
-func ResetPassword(c *fiber.Ctx) error {
+func ResetPassword(c echo.Context) error {
 	return nil
 }
 

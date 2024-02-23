@@ -1,7 +1,6 @@
 package hs
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,8 +19,8 @@ type ResData struct {
 }
 
 // Res formats response
-func Res(d ResData) fiber.Map {
-	rd := fiber.Map{
+func Res(d ResData) AnyMap {
+	rd := AnyMap{
 		"status": d.Status,
 		"msg":    d.Msg,
 		"d":      d.D,
@@ -29,3 +28,5 @@ func Res(d ResData) fiber.Map {
 
 	return rd
 }
+
+type AnyMap = map[string]interface{}
