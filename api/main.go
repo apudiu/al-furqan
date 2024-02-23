@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/apudiu/alfurqan/database"
 	"github.com/apudiu/alfurqan/router"
@@ -25,11 +24,15 @@ func main() {
 	router.SetupRoutes(e)
 
 	// print routes
-	rs := e.Routes()
-	rj, _ := json.MarshalIndent(rs, "", "  ")
-	fmt.Println(string(rj))
+	printRoutes(e.Routes())
 
 	log.Fatalln(
 		e.Start(":3001"),
 	)
+}
+
+func printRoutes(rs []*echo.Route) {
+	for _, r := range rs {
+		fmt.Printf("%+6s %s\n", r.Method, r.Path)
+	}
 }
