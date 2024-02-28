@@ -51,7 +51,6 @@ func ConnectDB() {
 		&model.Ayat{},
 		&model.Accent{},
 		&model.Language{},
-		&model.AudioFile{},
 	)
 	if mgErr != nil {
 		fmt.Println("Auto migration err", mgErr.Error())
