@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/apudiu/alfurqan/config"
 	"github.com/apudiu/alfurqan/database"
 	"github.com/apudiu/alfurqan/router"
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
 	e := echo.New()
-	//todo: parse .env file
-	isLocal := os.Getenv("DEBUG") == "1"
+
+	isLocal := config.EnvDebug()
 	e.Debug = isLocal
 
 	// connect to DB

@@ -17,7 +17,7 @@ var DB *gorm.DB
 // ConnectDB connect to db
 func ConnectDB() {
 	var err error
-	p := config.Config("DB_PORT")
+	p := config.EnvDbPort()
 	port, err := strconv.ParseUint(p, 10, 32)
 
 	if err != nil {
@@ -28,11 +28,11 @@ func ConnectDB() {
 	// user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		config.Config("DB_USER"),
-		config.Config("DB_PASSWORD"),
-		config.Config("DB_HOST"),
+		config.EnvDbUser(),
+		config.EnvDbPass(),
+		config.EnvDbHost(),
 		port,
-		config.Config("DB_NAME"),
+		config.EnvDbName(),
 	)
 	// Connect to the DB and initialize the DB variable
 	DB, err = gorm.Open(mysql.Open(dsn))

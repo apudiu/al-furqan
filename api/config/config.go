@@ -17,3 +17,25 @@ func Config(key string) string {
 	// Return the value of the variable
 	return os.Getenv(key)
 }
+
+func EnvDebug() bool {
+	return Config("DEBUG") == "1"
+}
+func EnvKey() string {
+	return Config("KEY")
+}
+func EnvDbHost() string {
+	return Config("DB_HOST")
+}
+func EnvDbPort() string {
+	return Config("DB_PORT")
+}
+func EnvDbName() string {
+	return Config("DB_NAME")
+}
+func EnvDbUser() string {
+	return Config("DB_USER")
+}
+func EnvDbPass() string {
+	return Config("DB_PASS")
+}
