@@ -32,3 +32,4 @@ Data we've:
 2. lng_id
 3. accent_id
     
+## Todo: Find bangla resource for same translation
